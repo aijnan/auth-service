@@ -1,23 +1,35 @@
 import { betterAuth } from "better-auth";
-import { openAPI } from "better-auth/plugins";
+import {emailOTP, openAPI} from "better-auth/plugins";
 import { Pool } from "pg";
 import { Redis } from "ioredis"
+import { sendOTPEmail } from "./email";
+import * as bcrypt from 'bcrypt';
 
 const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
-   .on("error", (err) => {
-     console.error("Redis connection error:", err)
-   })
-   .on("connect", () => {
-     console.log("Redis connected")
-   })
-  .on("ready", () => {
-     console.log("Redis ready")
-   })
+	.on("error", (err) => {
+		console.error("Redis connection error:", err)
+	})
+	.on("connect", () => {
+		console.log("Redis connected")
+	})
+	.on("ready", () => {
+		console.log("Redis ready")
+	})
 
 // Check better-auth docs for more info https://www.better-auth.com/docs/
 export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
+		password: {
+			hash: async (password: string): Promise<string> => {
+				// switch to bcrypt
+				const saltRounds = 10;
+				return await bcrypt.hash(password, saltRounds);
+			},
+			verify: async (data: { hash: string; password: string; }): Promise<boolean> => {
+				return await bcrypt.compare(data.password, data.hash);
+			}
+		}
 	},
 	// Session config
 	session: {
@@ -27,7 +39,19 @@ export const auth = betterAuth({
 		},
 	},
 	// Add your plugins here
-	plugins: [openAPI()],
+	plugins: [
+		openAPI(),
+		emailOTP({
+			async sendVerificationOTP({ email, otp, type}) {
+				try {
+					await sendOTPEmail(email, otp, type);
+				} catch (error) {
+					console.error("send verification otp error:", error);
+				}
+			},
+			sendVerificationOnSignUp: false,
+		})
+	],
 	// DB config
 	database: new Pool({
 		connectionString: process.env.DATABASE_URL,
@@ -49,5 +73,36 @@ export const auth = betterAuth({
 		delete: async (key) => {
 			await redis.del(key);
 		},
+	},
+	user: {
+		modelName: "user",
+		fields: {
+			emailVerified: "email_verified",
+			createdAt: "created_at",
+			updatedAt: "updated_at"
+		}
+	},
+	account: {
+		modelName: "account",
+		fields: {
+			accountId: "account_id",
+			providerId: "provider_id", 
+			userId: "user_id",
+			accessToken: "access_token",
+			refreshToken: "refresh_token",
+			idToken: "id_token",
+			accessTokenExpiresAt: "access_token_expires_at",
+			refreshTokenExpiresAt: "refresh_token_expires_at",
+			createdAt: "created_at",
+			updatedAt: "updated_at"
+		}
+	},
+	verification: {
+		modelName: "verification",
+		fields: {
+			expiresAt: "expires_at",
+			createdAt: "created_at",
+			updatedAt: "updated_at"
+		}
 	},
 });
