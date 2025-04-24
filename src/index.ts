@@ -78,7 +78,7 @@ app.post('/api/auth/init-password', async (c) => {
   return c.json({ success: true, message: 'password set success' });
 });
 
-app.on(["POST", "GET"], "/api/auth/**", (c) => {
+app.on(["POST", "GET"], "/api/auth/*", (c) => {
   return auth.handler(c.req.raw);
 });
 
