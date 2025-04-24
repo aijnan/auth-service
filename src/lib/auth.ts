@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import {emailOTP, openAPI} from "better-auth/plugins";
+import { emailOTP, openAPI } from "better-auth/plugins";
 import { Pool } from "pg";
 import { Redis } from "ioredis"
 import { sendOTPEmail } from "./email";
@@ -18,7 +18,7 @@ const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
 
 // Check better-auth docs for more info https://www.better-auth.com/docs/
 export const auth = betterAuth({
-	trustedOrigins:  process.env.CORS_ORIGIN?.split(',') || ["http://localhost:3001"],
+	trustedOrigins: process.env.CORS_ORIGIN?.split(',') || ["http://localhost:3001"],
 	emailAndPassword: {
 		enabled: true,
 		password: {
@@ -43,7 +43,7 @@ export const auth = betterAuth({
 	plugins: [
 		openAPI(),
 		emailOTP({
-			async sendVerificationOTP({ email, otp, type}) {
+			async sendVerificationOTP({ email, otp, type }) {
 				try {
 					await sendOTPEmail(email, otp, type);
 				} catch (error) {
@@ -53,6 +53,15 @@ export const auth = betterAuth({
 			sendVerificationOnSignUp: false,
 		})
 	],
+	// rate limit config
+	rateLimit: {
+		customRules: {
+			"/api/auth/email-otp/*": {
+				window: 60,
+				max: 1,
+			},
+		},
+	},
 	// DB config
 	database: new Pool({
 		connectionString: process.env.DATABASE_URL,
@@ -87,7 +96,7 @@ export const auth = betterAuth({
 		modelName: "account",
 		fields: {
 			accountId: "account_id",
-			providerId: "provider_id", 
+			providerId: "provider_id",
 			userId: "user_id",
 			accessToken: "access_token",
 			refreshToken: "refresh_token",
