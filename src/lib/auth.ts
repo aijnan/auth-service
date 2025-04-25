@@ -55,8 +55,10 @@ export const auth = betterAuth({
 	],
 	// rate limit config
 	rateLimit: {
+		enabled: true,
+		storage: "secondary-storage",
 		customRules: {
-			"/api/auth/email-otp/*": {
+			"/email-otp/send-verification-otp": {
 				window: 60,
 				max: 1,
 			},
