@@ -3,7 +3,7 @@ import { emailOTP, openAPI } from "better-auth/plugins";
 import { Pool } from "pg";
 import { Redis } from "ioredis"
 import { sendOTPEmail } from "./email";
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from "bcryptjs";
 
 const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
 	.on("error", (err) => {
