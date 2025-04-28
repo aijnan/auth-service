@@ -19,6 +19,7 @@ const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
 
 // Check better-auth docs for more info https://www.better-auth.com/docs/
 export const auth = betterAuth({
+	baseURL: process.env.AUTH_BACKEND_URL || "http://localhost:3000",
 	trustedOrigins: process.env.CORS_ORIGIN?.split(',') || ["http://localhost:3001", "myapp://"],
 	emailAndPassword: {
 		enabled: true,
@@ -65,6 +66,11 @@ export const auth = betterAuth({
 				max: 1,
 			},
 		},
+	},
+	advanced: {
+		crossSubDomainCookies: {
+			enabled: true
+		}
 	},
 	// DB config
 	database: new Pool({
