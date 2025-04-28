@@ -6,6 +6,7 @@
     "start": "./server"
   },
   "dependencies": {
+    "@better-auth/expo": "^1.2.7",
     "@types/nodemailer": "^6.4.17",
     "bcryptjs": "^3.0.2",
     "better-auth": "^1.2.7",

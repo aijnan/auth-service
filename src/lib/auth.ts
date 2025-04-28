@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import { Redis } from "ioredis"
 import { sendOTPEmail } from "./email";
 import * as bcrypt from "bcryptjs";
+import { expo } from "@better-auth/expo";
 
 const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
 	.on("error", (err) => {
@@ -18,7 +19,7 @@ const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
 
 // Check better-auth docs for more info https://www.better-auth.com/docs/
 export const auth = betterAuth({
-	trustedOrigins: process.env.CORS_ORIGIN?.split(',') || ["http://localhost:3001"],
+	trustedOrigins: process.env.CORS_ORIGIN?.split(',') || ["http://localhost:3001", "myapp://"],
 	emailAndPassword: {
 		enabled: true,
 		password: {
@@ -42,6 +43,7 @@ export const auth = betterAuth({
 	// Add your plugins here
 	plugins: [
 		openAPI(),
+		expo(),
 		emailOTP({
 			async sendVerificationOTP({ email, otp, type }) {
 				try {
