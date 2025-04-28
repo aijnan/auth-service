@@ -28,7 +28,7 @@ The database structure is initialized with the following tables:
 Use the provided SQL migration script to set up your database:
 
 ```sql
-create table "user" (
+create table "users" (
   "id" text not null primary key, 
   "name" text not null, 
   "email" text not null unique, 
@@ -38,7 +38,7 @@ create table "user" (
   "updated_at" timestamp not null
 );
 
-create table "account" (
+create table "accounts" (
   "id" text not null primary key, 
   "account_id" text not null, 
   "provider_id" text not null, 
@@ -54,7 +54,7 @@ create table "account" (
   "updated_at" timestamp not null
 );
 
-create table "verification" (
+create table "verifications" (
   "id" text not null primary key, 
   "identifier" text not null, 
   "value" text not null, 

@@ -89,7 +89,7 @@ export const auth = betterAuth({
 		},
 	},
 	user: {
-		modelName: "user",
+		modelName: "users",
 		fields: {
 			emailVerified: "email_verified",
 			createdAt: "created_at",
@@ -97,7 +97,7 @@ export const auth = betterAuth({
 		}
 	},
 	account: {
-		modelName: "account",
+		modelName: "accounts",
 		fields: {
 			accountId: "account_id",
 			providerId: "provider_id",
@@ -112,7 +112,7 @@ export const auth = betterAuth({
 		}
 	},
 	verification: {
-		modelName: "verification",
+		modelName: "verifications",
 		fields: {
 			expiresAt: "expires_at",
 			createdAt: "created_at",
