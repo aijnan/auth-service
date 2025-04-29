@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { emailOTP, openAPI } from "better-auth/plugins";
+import {bearer, emailOTP, openAPI} from "better-auth/plugins";
 import { Pool } from "pg";
 import { Redis } from "ioredis"
 import { sendOTPEmail } from "./email";
@@ -45,6 +45,7 @@ export const auth = betterAuth({
 	plugins: [
 		openAPI(),
 		expo(),
+		bearer(),
 		emailOTP({
 			async sendVerificationOTP({ email, otp, type }) {
 				try {
